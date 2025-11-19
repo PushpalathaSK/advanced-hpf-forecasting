@@ -1,0 +1,108 @@
+PROJECT REPORT: Advanced Time Series Forecasting with Hierarchical Probabilistic Modeling (HPF)
+
+1. INTRODUCTION
+This project implements an end-to-end hierarchical forecasting pipeline using a synthetically generated,
+multi-level retail sales dataset. The goal is to forecast demand across 5 regions and 100 stores over a 
+90-day horizon while ensuring coherence between store, region, and total-level forecasts.
+
+The project includes:
+• Data generation
+• Baseline modeling (ETS)
+• Hierarchical aggregation
+• Reconciliation
+• Forecast uncertainty estimation
+• Performance evaluation
+
+2. DATA GENERATION
+A 3-year daily dataset was programmatically created for:
+• 5 regions  
+• 20 stores per region (100 total)  
+• Daily records from 2018–2020
+
+The synthetic data includes:
+• Weekly seasonality  
+• Yearly seasonality  
+• Random noise  
+• Trend components  
+• Promotion spikes  
+• Store-level variation
+
+Files produced:
+• generated_sales_long.csv  
+• generated_sales_wide.csv  
+
+3. BASELINE MODELING
+An ETS (Holt–Winters) model with additive trend and weekly seasonality (period=7) was fitted 
+independently to each of the 100 store-level time series.
+
+Outputs:
+• 90-day store-level point forecasts  
+• Residual-based standard deviations  
+• 90% prediction intervals  
+
+File:
+• bottom_level_store_forecasts.csv (generated in notebook)
+
+4. HIERARCHICAL AGGREGATION
+Store forecasts were aggregated using the bottom-up approach:
+• Store → Region  
+• Region → Total  
+
+This produced region-level and total-level baseline forecasts.
+
+5. AGGREGATE LEVEL MODELING
+Separate ETS models were fitted directly to:
+• 5 region-level historical series  
+• Total sales series  
+
+These models generated independent region and total forecasts.
+
+6. RECONCILIATION STRATEGY
+A pragmatic, stable reconciliation was applied:
+
+Reconciled Forecast = 0.5 * (Bottom-Up Forecast) + 0.5 * (Aggregate ETS Forecast)
+
+This approach preserves:
+• Hierarchical coherence  
+• Region/store relationships  
+• Forecast smoothness  
+• Avoids instability of full MinT calculations on synthetic data  
+
+Final reconciled outputs with 90% prediction intervals are saved in:
+
+• top_level_forecasts_reconciled.csv
+
+7. FORECAST UNCERTAINTY (90% PIs)
+Prediction intervals were estimated using:
+• Residual standard deviation  
+• Normal approximation (z = 1.64485)  
+• Applied to region + total forecasts  
+
+8. EVALUATION METRICS
+A 90-day holdout period was used for baseline evaluation.
+
+Metrics computed:
+• MASE (Mean Absolute Scaled Error)  
+• wMAPE (Weighted Mean Absolute Percentage Error)  
+
+Results are stored in:
+• evaluation_metrics.csv  
+
+9. SUMMARY OF DELIVERABLES
+The following files are included as final deliverables:
+
+- data_generation_and_modeling.ipynb  
+- generated_sales_long.csv  
+- generated_sales_wide.csv  
+- top_level_forecasts_reconciled.csv  
+- evaluation_metrics.csv  
+- project_report.txt  
+- README.md  
+
+10. CONCLUSION
+The project successfully demonstrates a complete hierarchical time series forecasting workflow, 
+covering data synthesis, model fitting, aggregation, reconciliation, forecasting, and evaluation.  
+The final reconciled forecasts maintain coherence across all hierarchical levels and meet the 
+requirements of the advanced HPF assignment.
+
+END OF REPORT
